@@ -1,7 +1,11 @@
 import cv2
 import os
 import pandas as pd
+import matplotlib
+
+matplotlib.use('Agg')  # Use a non-GUI backend for saving figures
 import matplotlib.pyplot as plt
+
 # Create a directory for saving processed images
 output_dir = "processed_images"
 os.makedirs(output_dir, exist_ok=True)
@@ -22,21 +26,41 @@ for filename in os.listdir():
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         cv2.imwrite(os.path.join(output_dir, f"{filename}_step1_gray.jpg"), gray)
 
+        # Save figure after grayscale conversion
+        plt.imshow(gray, cmap='gray')
+        plt.title(f"Step 1: Grayscale - {filename}")
+        plt.savefig(os.path.join(output_dir, f"{filename}_step1_gray_figure.jpg"))
+        plt.close()  # Close the plot to avoid display issues
+
         # Step 2: Apply Gaussian Blur
         blur = cv2.GaussianBlur(gray, (11, 11), 0)
         cv2.imwrite(os.path.join(output_dir, f"{filename}_step2_blur.jpg"), blur)
-        plt.imshow(blur, cmap='gray')
 
+        # Save figure after Gaussian Blur
+        plt.imshow(blur, cmap='gray')
+        plt.title(f"Step 2: Gaussian Blur - {filename}")
+        plt.savefig(os.path.join(output_dir, f"{filename}_step2_blur_figure.jpg"))
+        plt.close()
 
         # Step 3: Apply Canny Edge Detection
         canny = cv2.Canny(blur, 30, 150, 3)
         cv2.imwrite(os.path.join(output_dir, f"{filename}_step3_canny.jpg"), canny)
 
+        # Save figure after Canny Edge Detection
+        plt.imshow(canny, cmap='gray')
+        plt.title(f"Step 3: Canny Edge Detection - {filename}")
+        plt.savefig(os.path.join(output_dir, f"{filename}_step3_canny_figure.jpg"))
+        plt.close()
 
         # Step 4: Apply Dilation
         dilated = cv2.dilate(canny, (1, 1), iterations=0)
         cv2.imwrite(os.path.join(output_dir, f"{filename}_step4_dilated.jpg"), dilated)
 
+        # Save figure after Dilation
+        plt.imshow(dilated, cmap='gray')
+        plt.title(f"Step 4: Dilation - {filename}")
+        plt.savefig(os.path.join(output_dir, f"{filename}_step4_dilated_figure.jpg"))
+        plt.close()
 
         # Step 5: Find Contours and Draw Them
         (cnt, hierarchy) = cv2.findContours(
@@ -45,11 +69,11 @@ for filename in os.listdir():
         cv2.drawContours(rgb, cnt, -1, (0, 255, 0), 2)
         cv2.imwrite(os.path.join(output_dir, f"{filename}_step5_contours.jpg"), cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR))
 
-
-        # Display the final image
+        # Save figure after drawing contours
         plt.imshow(rgb)
-        plt.show()
-
+        plt.title(f"Step 5: Contours - {filename}")
+        plt.savefig(os.path.join(output_dir, f"{filename}_step5_contours_figure.jpg"))
+        plt.close()
 
         # Count the number of objects (seeds)
         seed_count = len(cnt)
